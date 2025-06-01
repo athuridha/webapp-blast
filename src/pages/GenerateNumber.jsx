@@ -11,10 +11,15 @@ function generateRandomNumbers(prefixes, count) {
   const numbers = []
   for (let i = 0; i < count; i++) {
     const prefix = prefixes[Math.floor(Math.random() * prefixes.length)]
-    // Generate random number with random digit length between 11-13
-    const digitLength = Math.floor(Math.random() * 3) + 11 // 11, 12, or 13
-    const randomDigits = Array.from({ length: digitLength - prefix.length }, () => Math.floor(Math.random() * 10)).join('')
-    numbers.push(prefix + randomDigits)
+    // Pastikan prefix sudah format 62, dan tidak ada 0 di depan
+    let cleanPrefix = prefix.replace(/^0/, '62')
+    if (!cleanPrefix.startsWith('62')) {
+      cleanPrefix = '62' + cleanPrefix.replace(/^\+?/, '')
+    }
+    // Generate random number dengan panjang digit total 12-13 (contoh: 6285213971656)
+    const digitLength = Math.floor(Math.random() * 2) + 12 // 12 atau 13
+    const randomDigits = Array.from({ length: digitLength - cleanPrefix.length }, () => Math.floor(Math.random() * 10)).join('')
+    numbers.push(cleanPrefix + randomDigits)
   }
   return numbers
 }
@@ -23,16 +28,50 @@ export default function GenerateNumber() {
   const [jumlah, setJumlah] = useState(10)
   const [result, setResult] = useState([])
   const [digit, setDigit] = useState(8)
+  const [loading, setLoading] = useState(false)
   const toast = useToast()
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     const prefixes = getAllPrefixes()
     if (!jumlah || jumlah < 1) {
       toast({ title: 'Jumlah tidak valid', status: 'error', duration: 2000, isClosable: true })
       return
     }
-    const numbers = generateRandomNumbers(prefixes, Number(jumlah), digit)
-    setResult(numbers)
+    setLoading(true)
+    let verified = []
+    let attempts = 0
+    const maxAttempts = 20 // batasi percobaan agar tidak infinite loop
+    while (verified.length < Number(jumlah) && attempts < maxAttempts) {
+      const numbers = generateRandomNumbers(prefixes, Number(jumlah) * 2, digit) // generate lebih banyak untuk peluang lebih besar
+      try {
+        const response = await fetch('http://localhost:5000/api/check-whatsapp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ numbers })
+        })
+        const data = await response.json()
+        if (data.success) {
+          const newVerified = data.results.filter(r => r.exists).map(r => r.number)
+          // Gabungkan dan hilangkan duplikat
+          verified = Array.from(new Set([...verified, ...newVerified]))
+        } else {
+          toast({ title: 'Gagal verifikasi nomor', description: data.error, status: 'error', duration: 2000, isClosable: true })
+          break
+        }
+      } catch (err) {
+        toast({ title: 'Gagal verifikasi nomor', description: err.message, status: 'error', duration: 2000, isClosable: true })
+        break
+      }
+      attempts++
+    }
+    verified = verified.slice(0, Number(jumlah))
+    setResult(verified)
+    if (verified.length === 0) {
+      toast({ title: 'Tidak ada nomor yang terdaftar di WhatsApp', status: 'warning', duration: 2500, isClosable: true })
+    } else {
+      toast({ title: `${verified.length} nomor terverifikasi WhatsApp`, status: 'success', duration: 2000, isClosable: true })
+    }
+    setLoading(false)
   }
 
   const handleCopy = () => {
@@ -98,7 +137,7 @@ export default function GenerateNumber() {
             isDisabled
             fontSize={['sm', 'md']}
           />
-          <Button colorScheme="teal" onClick={handleGenerate} fontSize={['sm', 'md']} width={['100%', 'auto']}>
+          <Button colorScheme="teal" onClick={handleGenerate} isLoading={loading} fontSize={['sm', 'md']} width={['100%', 'auto']}>
             Generate
           </Button>
           <Button colorScheme="blue" variant="outline" onClick={handleCopy} isDisabled={result.length === 0} fontSize={['sm', 'md']} width={['100%', 'auto']}>

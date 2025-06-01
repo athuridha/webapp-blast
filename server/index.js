@@ -333,6 +333,29 @@ app.post('/api/settings', (req, res) => {
   res.json({ success: true });
 });
 
+// Endpoint untuk cek status WhatsApp nomor
+app.post('/api/check-whatsapp', async (req, res) => {
+  try {
+    const { numbers } = req.body;
+    if (!Array.isArray(numbers) || numbers.length === 0) {
+      return res.status(400).json({ success: false, error: 'Numbers array required' });
+    }
+    // Cek status WhatsApp untuk setiap nomor
+    const results = await Promise.all(numbers.map(async (number) => {
+      const chatId = number.includes('@c.us') ? number : `${number}@c.us`;
+      try {
+        const exists = await client.isRegisteredUser(chatId);
+        return { number, exists };
+      } catch (e) {
+        return { number, exists: false };
+      }
+    }));
+    res.json({ success: true, results });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
