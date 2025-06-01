@@ -10,17 +10,12 @@ export default function Sidebar() {
         
         <VStack spacing={2} align="stretch" flex={1}>
           <NavItem to="/" icon={FaHome} label="Dashboard" />
-          <NavItem to="/chat" icon={FaChat} label="Chat" />
           <NavItem to="/contacts" icon={FaUserFriends} label="Kontak" />
           <NavItem to="/blast" icon={FaComments} label="Blast Message" />
           <NavItem to="/history" icon={FaHistory} label="Riwayat" />
           <Divider my={4} />
           <NavItem to="/settings" icon={FaCog} label="Pengaturan" />
         </VStack>
-
-        <Text fontSize="sm" color="gray.500" mt={4} textAlign="center">
-          v1.0.0
-        </Text>
       </Flex>
     </Box>
   )

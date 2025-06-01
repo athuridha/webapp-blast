@@ -24,7 +24,7 @@ function Settings() {
     autoReplyMessage: '',
     notificationSound: true,
     messageDelay: '2',
-    maxBlastSize: '100'
+    maxBlastSize: 'unlimited' // default tanpa batas
   })
   const [saving, setSaving] = useState(false)
   const toast = useToast()
@@ -100,6 +100,7 @@ function Settings() {
                   value={settings.maxBlastSize}
                   onChange={(e) => handleChange('maxBlastSize', e.target.value)}
                 >
+                  <option value="unlimited">Tanpa Batas</option>
                   <option value="50">50 kontak</option>
                   <option value="100">100 kontak</option>
                   <option value="200">200 kontak</option>
