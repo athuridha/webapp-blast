@@ -6,7 +6,6 @@ import Blast from './pages/Blast'
 import Contacts from './pages/Contacts'
 import History from './pages/History'
 import Settings from './pages/Settings'
-import Chat from './pages/Chat'
 
 function App() {
   return (
@@ -19,7 +18,6 @@ function App() {
           <Route path="/contacts" element={<Contacts />} />
           <Route path="/history" element={<History />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/chat" element={<Chat />} />
         </Routes>
       </Box>
     </Flex>

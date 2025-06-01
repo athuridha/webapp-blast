@@ -85,16 +85,25 @@ function Blast() {
         .filter(contact => selectedContacts.includes(contact.id))
         .map(contact => contact.phone)
 
-      let formData = new FormData()
+      let response
       if (media) {
+        // Kirim sebagai FormData jika ada media
+        let formData = new FormData()
         formData.append('media', media)
+        formData.append('numbers', JSON.stringify(selectedPhones))
+        formData.append('message', message)
+        response = await axios.post('http://localhost:5000/api/send', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+      } else {
+        // Kirim sebagai JSON jika tanpa media
+        response = await axios.post('http://localhost:5000/api/send', {
+          numbers: selectedPhones,
+          message: message
+        })
       }
-
-      const response = await axios.post('http://localhost:5000/api/send', {
-        numbers: selectedPhones,
-        message: message,
-        mediaUrl: media ? URL.createObjectURL(media) : null
-      })
 
       const results = response.data.results || []
       const successCount = results.filter(r => r.status === 'success').length
@@ -159,8 +168,37 @@ function Blast() {
             rows={5}
           />
         </FormControl>
-
-
+    <FormControl>
+          <FormLabel>Media (opsional)</FormLabel>
+          <Box
+            {...getRootProps()}
+            border="2px dashed #CBD5E0"
+            borderRadius="md"
+            p={4}
+            textAlign="center"
+            cursor="pointer"
+            bg={media ? 'green.50' : 'gray.50'}
+            mb={2}
+          >
+            <input {...getInputProps()} />
+            {media ? (
+              <HStack justify="center">
+                {media.type.startsWith('image/') && (
+                  <Image src={URL.createObjectURL(media)} alt="preview" maxH="100px" />
+                )}
+                {media.type.startsWith('video/') && (
+                  <video src={URL.createObjectURL(media)} controls style={{ maxHeight: '100px' }} />
+                )}
+                {media.type === 'application/pdf' && (
+                  <Text>PDF: {media.name}</Text>
+                )}
+                <Button size="sm" colorScheme="red" onClick={e => { e.stopPropagation(); setMedia(null); }}>Hapus</Button>
+              </HStack>
+            ) : (
+              <Text color="gray.500">Drag & drop file media di sini, atau klik untuk pilih file (jpg, png, mp4, pdf)</Text>
+            )}
+          </Box>
+        </FormControl>
 
         <FormControl>
           <FormLabel>Pilih Penerima</FormLabel>

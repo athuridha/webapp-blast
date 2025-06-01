@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Box, VStack, Text, Table, Thead, Tbody, Tr, Th, Td, Badge } from '@chakra-ui/react'
+import { Box, VStack, Text, Table, Thead, Tbody, Tr, Th, Td, Badge, Button, useToast } from '@chakra-ui/react'
 import axios from 'axios'
 
 function History() {
   const [history, setHistory] = useState([])
+  const toast = useToast()
 
   useEffect(() => {
     let polling = null
@@ -25,10 +26,35 @@ function History() {
     return () => clearInterval(polling)
   }, [])
 
+  const handleDeleteAll = async () => {
+    try {
+      await axios.delete('http://localhost:5000/api/messages')
+      setHistory([])
+      toast({
+        title: 'Sukses',
+        description: 'Semua riwayat berhasil dihapus',
+        status: 'success',
+        duration: 3000,
+        isClosable: true
+      })
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Gagal menghapus riwayat',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      })
+    }
+  }
+
   return (
     <Box bg="white" p={8} borderRadius="lg" shadow="md">
       <VStack spacing={6} align="stretch">
         <Text fontSize="2xl" fontWeight="bold">Riwayat Pengiriman</Text>
+        <Button colorScheme="red" alignSelf="flex-end" onClick={handleDeleteAll} mb={2}>
+          Hapus Semua Riwayat
+        </Button>
 
         <Box overflowX="auto">
           <Table variant="simple">
