@@ -145,17 +145,26 @@ function Contacts() {
   }
 
   return (
-    <Box bg="white" p={8} borderRadius="lg" shadow="md">
+    <Box bg="white" p={[2, 4, 8]} borderRadius="lg" shadow="md" maxW="100vw" overflowX="hidden">
       <VStack spacing={6} align="stretch">
-        <HStack justify="space-between">
-          <Text fontSize="2xl" fontWeight="bold">Daftar Kontak</Text>
-          <HStack>
+        <HStack
+          justify="space-between"
+          flexDirection={['column', 'row']}
+          align={['stretch', 'center']}
+          spacing={[2, 4]}
+        >
+          <Text fontSize={['xl', '2xl']} fontWeight="bold" mb={[2, 0]}>
+            Daftar Kontak
+          </Text>
+          <HStack spacing={[2, 4]} flexWrap="wrap">
             <Button
               as="a"
               href="/template_kontak.xlsx"
               download
               colorScheme="teal"
               variant="outline"
+              fontSize={['sm', 'md']}
+              width={['100%', 'auto']}
             >
               Download Template Kontak
             </Button>
@@ -164,6 +173,8 @@ function Contacts() {
               htmlFor="file-upload"
               colorScheme="green"
               cursor="pointer"
+              fontSize={['sm', 'md']}
+              width={['100%', 'auto']}
             >
               Import dari Excel/CSV
               <input
@@ -178,6 +189,8 @@ function Contacts() {
               colorScheme="red"
               variant="outline"
               onClick={handleDeleteAllContacts}
+              fontSize={['sm', 'md']}
+              width={['100%', 'auto']}
             >
               Hapus Semua Kontak
             </Button>
@@ -188,53 +201,56 @@ function Contacts() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           mb={2}
-          maxW="300px"
-          alignSelf="flex-end"
+          maxW={['100%', '300px']}
+          alignSelf={['stretch', 'flex-end']}
+          fontSize={['sm', 'md']}
         />
 
-        <Box p={4} borderWidth={1} borderRadius="md">
+        <Box p={[2, 4]} borderWidth={1} borderRadius="md">
           <VStack spacing={4}>
             <FormControl>
-              <FormLabel>Nama</FormLabel>
+              <FormLabel fontSize={['sm', 'md']}>Nama</FormLabel>
               <Input
                 value={newContact.name}
                 onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
                 placeholder="Masukkan nama kontak"
+                fontSize={['sm', 'md']}
               />
             </FormControl>
             <FormControl>
-              <FormLabel>Nomor WhatsApp</FormLabel>
+              <FormLabel fontSize={['sm', 'md']}>Nomor WhatsApp</FormLabel>
               <Input
                 value={newContact.phone}
                 onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
                 placeholder="Contoh: 081234567890"
+                fontSize={['sm', 'md']}
               />
             </FormControl>
-            <Button colorScheme="blue" onClick={handleAddContact} width="full">
+            <Button colorScheme="blue" onClick={handleAddContact} width="full" fontSize={['sm', 'md']}>
               Tambah Kontak
             </Button>
           </VStack>
         </Box>
 
-        <Box overflowX="auto">
-          <Table variant="simple">
+        <Box overflowX="auto" width="100%">
+          <Table variant="simple" size={['sm', 'md']} minWidth="500px">
             <Thead>
               <Tr>
-                <Th>No</Th>
-                <Th>Nama</Th>
-                <Th>Nomor WhatsApp</Th>
-                <Th>Aksi</Th>
+                <Th fontSize={['xs', 'sm']}>No</Th>
+                <Th fontSize={['xs', 'sm']}>Nama</Th>
+                <Th fontSize={['xs', 'sm']}>Nomor WhatsApp</Th>
+                <Th fontSize={['xs', 'sm']}>Aksi</Th>
               </Tr>
             </Thead>
             <Tbody>
               {contacts.filter(contact => contact.name.toLowerCase().includes(search.toLowerCase())).map((contact, index) => (
                 <Tr key={contact.id}>
-                  <Td>{index + 1}</Td>
-                  <Td>{contact.name}</Td>
-                  <Td>{contact.phone}</Td>
+                  <Td fontSize={['xs', 'sm']}>{index + 1}</Td>
+                  <Td fontSize={['xs', 'sm']}>{contact.name}</Td>
+                  <Td fontSize={['xs', 'sm']}>{contact.phone}</Td>
                   <Td>
                     <Button
-                      size="sm"
+                      size="xs"
                       colorScheme="red"
                       onClick={() => handleDeleteContact(contact.id)}
                     >
@@ -245,7 +261,7 @@ function Contacts() {
               ))}
               {contacts.filter(contact => contact.name.toLowerCase().includes(search.toLowerCase())).length === 0 && (
                 <Tr>
-                  <Td colSpan={4} textAlign="center" py={4}>
+                  <Td colSpan={4} textAlign="center" py={4} fontSize={['xs', 'sm']}>
                     Belum ada kontak
                   </Td>
                 </Tr>

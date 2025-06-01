@@ -1,6 +1,6 @@
 import { Box, Flex, VStack, Text, Link, Divider, Button, IconButton, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, useDisclosure } from '@chakra-ui/react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { FaHome, FaComments, FaUserFriends, FaHistory, FaCog, FaSignOutAlt, FaBars } from 'react-icons/fa'
+import { FaHome, FaComments, FaUserFriends, FaHistory, FaCog, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa'
 import { useState, useEffect } from 'react'
 
 export default function Sidebar() {
@@ -24,21 +24,37 @@ export default function Sidebar() {
     return (
       <>
         <IconButton
-          icon={<FaBars />} 
-          aria-label="Open menu"
+          icon={
+            isOpen
+              ? <FaTimes style={{ transition: 'transform 0.2s', color: '#2F855A' }} />
+              : <FaBars style={{ transition: 'transform 0.2s', color: '#2F855A' }} />
+          }
+          aria-label={isOpen ? "Tutup menu" : "Buka menu"}
           position="fixed"
           top={4}
           left={4}
-          zIndex={1100}
-          onClick={onOpen}
+          zIndex={1200}
+          onClick={isOpen ? onClose : onOpen}
+          size="lg"
+          bg="white"
+          color="green.600"
+          shadow="md"
+          borderRadius="full"
+          _hover={{ bg: 'green.50' }}
+          _active={{ bg: 'green.100' }}
         />
-        <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-          <DrawerOverlay />
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerHeader color="green.600">Admin WA Blast</DrawerHeader>
-            <DrawerBody>
-              <VStack spacing={2} align="stretch" flex={1}>
+        <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="xs">
+          <DrawerOverlay
+            bg="blackAlpha.400"
+            backdropFilter="blur(2px)"
+          />
+          <DrawerContent borderRightRadius="xl" boxShadow="2xl">
+            <DrawerCloseButton mt={2} color="green.600" size="lg" />
+            <DrawerHeader color="green.600" fontWeight="bold" fontSize="xl" borderBottomWidth="1px">
+              Admin WA Blast
+            </DrawerHeader>
+            <DrawerBody p={0}>
+              <VStack spacing={2} align="stretch" flex={1} px={2} pt={4}>
                 <NavItem to="/" icon={FaHome} label="Dashboard" onClick={onClose} />
                 <NavItem to="/blast" icon={FaComments} label="Blast Message" onClick={onClose} />
                 <NavItem to="/contacts" icon={FaUserFriends} label="Kontak" onClick={onClose} />
@@ -47,16 +63,18 @@ export default function Sidebar() {
                 <Divider my={4} />
                 <NavItem to="/settings" icon={FaCog} label="Pengaturan" onClick={onClose} />
               </VStack>
-              <Button
-                leftIcon={<FaSignOutAlt />}
-                colorScheme="red"
-                variant="outline"
-                mt={8}
-                onClick={() => { onClose(); handleLogout(); }}
-                w="full"
-              >
-                Logout
-              </Button>
+              <Box px={4} pb={4} pt={2}>
+                <Button
+                  leftIcon={<FaSignOutAlt />}
+                  colorScheme="red"
+                  variant="outline"
+                  w="full"
+                  onClick={() => { onClose(); handleLogout(); }}
+                  fontWeight="semibold"
+                >
+                  Logout
+                </Button>
+              </Box>
             </DrawerBody>
           </DrawerContent>
         </Drawer>

@@ -49,34 +49,40 @@ function History() {
   }
 
   return (
-    <Box bg="white" p={8} borderRadius="lg" shadow="md">
+    <Box bg="white" p={[2, 4, 8]} borderRadius="lg" shadow="md" maxW="100vw" overflowX="hidden">
       <VStack spacing={6} align="stretch">
-        <Text fontSize="2xl" fontWeight="bold">Riwayat Pengiriman</Text>
-        <Button colorScheme="red" alignSelf="flex-end" onClick={handleDeleteAll} mb={2}>
+        <Text fontSize={['xl', '2xl']} fontWeight="bold">Riwayat Pengiriman</Text>
+        <Button
+          colorScheme="red"
+          alignSelf={['stretch', 'flex-end']}
+          onClick={handleDeleteAll}
+          mb={2}
+          fontSize={['sm', 'md']}
+        >
           Hapus Semua Riwayat
         </Button>
 
-        <Box overflowX="auto">
-          <Table variant="simple">
+        <Box overflowX="auto" width="100%">
+          <Table variant="simple" size={['xs', 'sm']} minWidth="600px">
             <Thead>
               <Tr>
-                <Th>Tanggal</Th>
-                <Th>Pesan</Th>
-                <Th>Media</Th>
-                <Th>Total Penerima</Th>
-                <Th>Status</Th>
+                <Th fontSize={['xs', 'sm']}>Tanggal</Th>
+                <Th fontSize={['xs', 'sm']}>Pesan</Th>
+                <Th fontSize={['xs', 'sm']}>Media</Th>
+                <Th fontSize={['xs', 'sm']}>Total Penerima</Th>
+                <Th fontSize={['xs', 'sm']}>Status</Th>
               </Tr>
             </Thead>
             <Tbody>
               {history.map((item) => (
                 <Tr key={item.id}>
-                  <Td>{new Date(item.created_at).toLocaleString()}</Td>
-                  <Td>{item.message}</Td>
-                  <Td>
+                  <Td fontSize={['xs', 'sm']}>{new Date(item.created_at).toLocaleString()}</Td>
+                  <Td fontSize={['xs', 'sm']}>{item.message}</Td>
+                  <Td fontSize={['xs', 'sm']}>
                     <Badge colorScheme="gray">Tidak</Badge>
                   </Td>
-                  <Td>{item.phone.includes('@') ? item.phone.split('@')[0] : item.phone}</Td>
-                  <Td>
+                  <Td fontSize={['xs', 'sm']}>{item.phone.includes('@') ? item.phone.split('@')[0] : item.phone}</Td>
+                  <Td fontSize={['xs', 'sm']}>
                     <Badge 
                       colorScheme={item.status === 'success' ? 'green' : 
                                  item.status === 'received' ? 'blue' : 'red'}
@@ -89,7 +95,7 @@ function History() {
               ))}
               {history.length === 0 && (
                 <Tr>
-                  <Td colSpan={5} textAlign="center" py={4}>
+                  <Td colSpan={5} textAlign="center" py={4} fontSize={['xs', 'sm']}>
                     Belum ada riwayat pengiriman
                   </Td>
                 </Tr>

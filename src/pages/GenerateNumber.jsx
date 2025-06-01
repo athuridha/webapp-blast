@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, VStack, HStack, Text, Button, Select, Input, Table, Thead, Tbody, Tr, Th, Td, useToast } from '@chakra-ui/react'
+import { Box, VStack, HStack, Stack, Text, Button, Select, Input, Table, Thead, Tbody, Tr, Th, Td, useToast } from '@chakra-ui/react'
 import nomer from '../lib/nomer'
 
 function getAllPrefixes() {
@@ -60,37 +60,67 @@ export default function GenerateNumber() {
   }
 
   return (
-    <Box bg="white" p={8} borderRadius="lg" shadow="md">
+    <Box bg="white" p={[2, 4, 8]} borderRadius="lg" shadow="md" maxW="100vw" overflowX="hidden">
       <VStack spacing={6} align="stretch">
-        <Text fontSize="2xl" fontWeight="bold">Generate Random Nomor WhatsApp</Text>
-        <HStack>
-          <Select value={jumlah} onChange={e => setJumlah(e.target.value)} maxW="150px">
+        <Text fontSize={['xl', '2xl']} fontWeight="bold">Generate Random Nomor WhatsApp</Text>
+        <Stack direction={['column', 'row']} spacing={[2, 4]} align={['stretch', 'center']}>
+          <Select
+            value={jumlah}
+            onChange={e => setJumlah(e.target.value)}
+            maxW={['100%', '150px']}
+            fontSize={['sm', 'md']}
+          >
             {[10, 20, 50, 100, 200, 500, 1000].map(val => (
               <option key={val} value={val}>{val}</option>
             ))}
             <option value="custom">Custom</option>
           </Select>
           {jumlah === 'custom' ? (
-            <Input type="number" min={1} max={10000} value={typeof jumlah === 'number' ? jumlah : ''} onChange={e => setJumlah(Number(e.target.value))} maxW="100px" placeholder="Jumlah" />
+            <Input
+              type="number"
+              min={1}
+              max={10000}
+              value={typeof jumlah === 'number' ? jumlah : ''}
+              onChange={e => setJumlah(Number(e.target.value))}
+              maxW={['100%', '100px']}
+              placeholder="Jumlah"
+              fontSize={['sm', 'md']}
+            />
           ) : null}
-          <Input type="number" min={11} max={13} value={digit} onChange={e => setDigit(Number(e.target.value))} maxW="100px" placeholder="Digit Akhir" isDisabled />
-          <Button colorScheme="teal" onClick={handleGenerate}>Generate</Button>
-          <Button colorScheme="blue" variant="outline" onClick={handleCopy} isDisabled={result.length === 0}>Copy</Button>
-          <Button colorScheme="green" variant="solid" onClick={() => handleSaveToContacts()} isDisabled={result.length === 0}>Simpan ke Kontak</Button>
-        </HStack>
-        <Box overflowX="auto" maxH="400px">
-          <Table size="sm">
+          <Input
+            type="number"
+            min={11}
+            max={13}
+            value={digit}
+            onChange={e => setDigit(Number(e.target.value))}
+            maxW={['100%', '100px']}
+            placeholder="Digit Akhir"
+            isDisabled
+            fontSize={['sm', 'md']}
+          />
+          <Button colorScheme="teal" onClick={handleGenerate} fontSize={['sm', 'md']} width={['100%', 'auto']}>
+            Generate
+          </Button>
+          <Button colorScheme="blue" variant="outline" onClick={handleCopy} isDisabled={result.length === 0} fontSize={['sm', 'md']} width={['100%', 'auto']}>
+            Copy
+          </Button>
+          <Button colorScheme="green" variant="solid" onClick={() => handleSaveToContacts()} isDisabled={result.length === 0} fontSize={['sm', 'md']} width={['100%', 'auto']}>
+            Simpan ke Kontak
+          </Button>
+        </Stack>
+        <Box overflowX="auto" maxH="400px" width="100%">
+          <Table size={['xs', 'sm']} minWidth="350px">
             <Thead>
               <Tr>
-                <Th>No</Th>
-                <Th>Nomor WhatsApp</Th>
+                <Th fontSize={['xs', 'sm']}>No</Th>
+                <Th fontSize={['xs', 'sm']}>Nomor WhatsApp</Th>
               </Tr>
             </Thead>
             <Tbody>
               {result.map((num, idx) => (
                 <Tr key={num}>
-                  <Td>{idx + 1}</Td>
-                  <Td>{num}</Td>
+                  <Td fontSize={['xs', 'sm']}>{idx + 1}</Td>
+                  <Td fontSize={['xs', 'sm']}>{num}</Td>
                 </Tr>
               ))}
             </Tbody>
