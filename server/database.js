@@ -85,6 +85,16 @@ const contactsDb = {
         else resolve({ success: true });
       });
     });
+  },
+
+  // Hapus semua kontak
+  async deleteAll() {
+    return new Promise((resolve, reject) => {
+      db.run('DELETE FROM contacts', [], (err) => {
+        if (err) reject(err);
+        else resolve({ success: true });
+      });
+    });
   }
 }
 

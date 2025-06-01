@@ -88,6 +88,28 @@ function Contacts() {
     }
   }
 
+  const handleDeleteAllContacts = async () => {
+    try {
+      await axios.delete('http://localhost:5000/api/contacts')
+      await loadContacts()
+      toast({
+        title: 'Sukses',
+        description: 'Semua kontak berhasil dihapus',
+        status: 'success',
+        duration: 3000,
+        isClosable: true
+      })
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Gagal menghapus semua kontak',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      })
+    }
+  }
+
   const handleAddContact = async () => {
     try {
       // Validasi nomor telepon
@@ -151,6 +173,13 @@ function Contacts() {
                 onChange={handleFileUpload}
                 style={{ display: 'none' }}
               />
+            </Button>
+            <Button
+              colorScheme="red"
+              variant="outline"
+              onClick={handleDeleteAllContacts}
+            >
+              Hapus Semua Kontak
             </Button>
           </HStack>
         </HStack>

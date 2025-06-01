@@ -129,6 +129,16 @@ app.delete('/api/contacts/:id', async (req, res) => {
   }
 });
 
+// Tambahkan endpoint untuk hapus semua kontak
+app.delete('/api/contacts', async (req, res) => {
+  try {
+    await contactsDb.deleteAll();
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // API Endpoint untuk riwayat pesan
 app.get('/api/messages', async (req, res) => {
   try {
