@@ -6,6 +6,8 @@ import Blast from './pages/Blast'
 import Contacts from './pages/Contacts'
 import History from './pages/History'
 import Settings from './pages/Settings'
+import Login from './pages/Login'
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
   return (
@@ -13,11 +15,12 @@ function App() {
       <Sidebar />
       <Box flex={1} bg="gray.50" p={8}>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/blast" element={<Blast />} />
-          <Route path="/contacts" element={<Contacts />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/blast" element={<ProtectedRoute><Blast /></ProtectedRoute>} />
+          <Route path="/contacts" element={<ProtectedRoute><Contacts /></ProtectedRoute>} />
+          <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         </Routes>
       </Box>
     </Flex>

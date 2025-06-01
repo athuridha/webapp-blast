@@ -1,8 +1,13 @@
-import { Box, Flex, VStack, Text, Link, Divider } from '@chakra-ui/react'
-import { NavLink } from 'react-router-dom'
-import { FaHome, FaComments, FaUserFriends, FaHistory, FaCog, FaComments as FaChat } from 'react-icons/fa'
+import { Box, Flex, VStack, Text, Link, Divider, Button } from '@chakra-ui/react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { FaHome, FaComments, FaUserFriends, FaHistory, FaCog, FaSignOutAlt } from 'react-icons/fa'
 
 export default function Sidebar() {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    sessionStorage.removeItem('isAuthenticated');
+    navigate('/login');
+  };
   return (
     <Box w="250px" bg="white" h="100vh" borderRightWidth="1px" p={4}>
       <Flex direction="column" h="full">
@@ -16,6 +21,16 @@ export default function Sidebar() {
           <Divider my={4} />
           <NavItem to="/settings" icon={FaCog} label="Pengaturan" />
         </VStack>
+        <Button
+          leftIcon={<FaSignOutAlt />}
+          colorScheme="red"
+          variant="outline"
+          mt={8}
+          onClick={handleLogout}
+          w="full"
+        >
+          Logout
+        </Button>
       </Flex>
     </Box>
   )

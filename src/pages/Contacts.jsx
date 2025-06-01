@@ -127,21 +127,32 @@ function Contacts() {
       <VStack spacing={6} align="stretch">
         <HStack justify="space-between">
           <Text fontSize="2xl" fontWeight="bold">Daftar Kontak</Text>
-          <Button
-            as="label"
-            htmlFor="file-upload"
-            colorScheme="green"
-            cursor="pointer"
-          >
-            Import dari Excel/CSV
-            <input
-              id="file-upload"
-              type="file"
-              accept=".xlsx,.xls,.csv"
-              onChange={handleFileUpload}
-              style={{ display: 'none' }}
-            />
-          </Button>
+          <HStack>
+            <Button
+              as="a"
+              href="/template_kontak.xlsx"
+              download
+              colorScheme="teal"
+              variant="outline"
+            >
+              Download Template Kontak
+            </Button>
+            <Button
+              as="label"
+              htmlFor="file-upload"
+              colorScheme="green"
+              cursor="pointer"
+            >
+              Import dari Excel/CSV
+              <input
+                id="file-upload"
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                onChange={handleFileUpload}
+                style={{ display: 'none' }}
+              />
+            </Button>
+          </HStack>
         </HStack>
         <Input
           placeholder="Cari nama kontak..."
