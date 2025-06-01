@@ -268,6 +268,33 @@ app.delete('/api/messages', async (req, res) => {
   }
 });
 
+// ===== Tambah untuk settings =====
+let settingsCache = null;
+
+app.get('/api/settings', (req, res) => {
+  if (settingsCache) {
+    res.json({ success: true, settings: settingsCache });
+  } else {
+    // Default settings jika belum pernah disimpan
+    res.json({
+      success: true,
+      settings: {
+        defaultMessage: '',
+        autoReply: false,
+        autoReplyMessage: '',
+        notificationSound: true,
+        messageDelay: '2',
+        maxBlastSize: 'unlimited'
+      }
+    });
+  }
+});
+
+app.post('/api/settings', (req, res) => {
+  settingsCache = req.body;
+  res.json({ success: true });
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

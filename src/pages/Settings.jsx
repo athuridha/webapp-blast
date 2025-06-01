@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Box,
   VStack,
@@ -24,10 +24,29 @@ function Settings() {
     autoReplyMessage: '',
     notificationSound: true,
     messageDelay: '2',
-    maxBlastSize: 'unlimited' // default tanpa batas
+    maxBlastSize: 'unlimited'
   })
   const [saving, setSaving] = useState(false)
   const toast = useToast()
+
+  useEffect(() => {
+    // Ambil settings dari backend saat mount
+    axios.get('http://localhost:5000/api/settings')
+      .then(res => {
+        if (res.data.success && res.data.settings) {
+          setSettings(res.data.settings)
+        }
+      })
+      .catch(() => {
+        toast({
+          title: 'Error',
+          description: 'Gagal mengambil pengaturan',
+          status: 'error',
+          duration: 3000,
+          isClosable: true
+        })
+      })
+  }, [])
 
   const handleChange = (field, value) => {
     setSettings(prev => ({
