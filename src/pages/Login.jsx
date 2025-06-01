@@ -1,20 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Flex, Input, Button, Text, VStack, useToast } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [backendPassword, setBackendPassword] = useState(null);
   const navigate = useNavigate();
   const toast = useToast();
+
+  // Ambil password dari backend saat komponen mount
+  useEffect(() => {
+    fetch('http://localhost:5000/api/settings/password')
+      .then((res) => res.json())
+      .then((data) => {
+        setBackendPassword(data.password || 'usindomaju01');
+      })
+      .catch(() => setBackendPassword('usindomaju01'));
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Periksa password
-    if (password === 'usindomaju01') {
-      // Simpan status login di sessionStorage
+    // Ambil password dari backend, fallback ke default
+    const savedPassword = backendPassword || 'usindomaju01';
+
+    if (password === savedPassword) {
       sessionStorage.setItem('isAuthenticated', 'true');
       navigate('/');
     } else {
@@ -44,6 +56,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               size="lg"
+              isDisabled={backendPassword === null}
             />
             <Button
               type="submit"
@@ -51,6 +64,7 @@ export default function Login() {
               size="lg"
               width="full"
               isLoading={isLoading}
+              isDisabled={backendPassword === null}
             >
               Login
             </Button>

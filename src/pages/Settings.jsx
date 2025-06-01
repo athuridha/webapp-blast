@@ -27,6 +27,8 @@ function Settings() {
     maxBlastSize: 'unlimited'
   })
   const [saving, setSaving] = useState(false)
+  const [newPassword, setNewPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
   const toast = useToast()
 
   useEffect(() => {
@@ -80,6 +82,37 @@ function Settings() {
     } finally {
       setSaving(false)
     }
+  }
+
+  const handleChangePassword = (e) => {
+    e.preventDefault()
+    if (!newPassword) {
+      toast({
+        title: 'Password tidak boleh kosong',
+        status: 'error',
+        duration: 2000,
+        isClosable: true
+      })
+      return
+    }
+    if (newPassword !== confirm) {
+      toast({
+        title: 'Konfirmasi password tidak cocok',
+        status: 'error',
+        duration: 2000,
+        isClosable: true
+      })
+      return
+    }
+    localStorage.setItem('waBlastPassword', newPassword)
+    setNewPassword('')
+    setConfirm('')
+    toast({
+      title: 'Password berhasil diubah',
+      status: 'success',
+      duration: 2000,
+      isClosable: true
+    })
   }
 
   return (
@@ -179,6 +212,38 @@ function Settings() {
         >
           Simpan Pengaturan
         </Button>
+
+        <Card>
+          <CardBody>
+            <VStack spacing={4} align="stretch">
+              <Text fontWeight="semibold">Ubah Password</Text>
+              
+              <form onSubmit={handleChangePassword}>
+                <FormControl>
+                  <FormLabel>Password Baru</FormLabel>
+                  <Input
+                    type="password"
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    placeholder="Password baru"
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Konfirmasi Password</FormLabel>
+                  <Input
+                    type="password"
+                    value={confirm}
+                    onChange={e => setConfirm(e.target.value)}
+                    placeholder="Konfirmasi password"
+                  />
+                </FormControl>
+                <Button colorScheme="green" type="submit" width="full">
+                  Ubah Password
+                </Button>
+              </form>
+            </VStack>
+          </CardBody>
+        </Card>
       </VStack>
     </Box>
   )

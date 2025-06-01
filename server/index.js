@@ -271,6 +271,44 @@ app.delete('/api/messages', async (req, res) => {
 // ===== Tambah untuk settings =====
 let settingsCache = null;
 
+// --- Tambah: Password login persist di file settings.json ---
+const settingsFile = path.join(__dirname, 'settings.json');
+function getPasswordFromFile() {
+  try {
+    if (fs.existsSync(settingsFile)) {
+      const data = JSON.parse(fs.readFileSync(settingsFile, 'utf8'));
+      return data.password || 'usindomaju01';
+    }
+  } catch (e) {}
+  return 'usindomaju01';
+}
+function setPasswordToFile(password) {
+  let data = {};
+  if (fs.existsSync(settingsFile)) {
+    try {
+      data = JSON.parse(fs.readFileSync(settingsFile, 'utf8'));
+    } catch (e) {}
+  }
+  data.password = password;
+  fs.writeFileSync(settingsFile, JSON.stringify(data, null, 2));
+}
+
+// Endpoint GET password login
+app.get('/api/settings/password', (req, res) => {
+  const password = getPasswordFromFile();
+  res.json({ password });
+});
+
+// Endpoint POST untuk ubah password login
+app.post('/api/settings/password', (req, res) => {
+  const { password } = req.body;
+  if (!password) {
+    return res.status(400).json({ success: false, error: 'Password tidak boleh kosong' });
+  }
+  setPasswordToFile(password);
+  res.json({ success: true });
+});
+
 app.get('/api/settings', (req, res) => {
   if (settingsCache) {
     res.json({ success: true, settings: settingsCache });
