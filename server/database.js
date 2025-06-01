@@ -142,6 +142,16 @@ const messagesDb = {
         reject(error);
       }
     });
+  },
+
+  // Hapus semua riwayat pesan
+  async deleteAll() {
+    return new Promise((resolve, reject) => {
+      db.run('DELETE FROM messages', [], function(err) {
+        if (err) reject(err);
+        else resolve({ success: true });
+      });
+    });
   }
 }; // Tambahkan kurung kurawal penutup
 

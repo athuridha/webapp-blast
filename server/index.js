@@ -2,6 +2,9 @@ const express = require('express');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const cors = require('cors');
 const { contactsDb, messagesDb } = require('./database');
+const fileUpload = require('express-fileupload');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -9,6 +12,8 @@ const port = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(fileUpload());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Initialize WhatsApp client
 const client = new Client({
@@ -149,39 +154,76 @@ app.get('/api/messages/success-count', async (req, res) => {
 });
 app.post('/api/send', async (req, res) => {
   try {
-    const { numbers, message, mediaUrl } = req.body;
+    let numbers, message, mediaFilePath = null, mediaMimetype = null, mediaFilename = null;
+    // Jika request berupa FormData (ada file media)
+    if (req.files && req.files.media) {
+      numbers = JSON.parse(req.body.numbers);
+      message = req.body.message;
+      const media = req.files.media;
+      const uploadDir = path.join(__dirname, 'uploads');
+      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+      const uniqueName = Date.now() + '-' + media.name.replace(/\s/g, '_');
+      mediaFilePath = path.join(uploadDir, uniqueName);
+      await media.mv(mediaFilePath);
+      mediaMimetype = media.mimetype;
+      mediaFilename = uniqueName;
+    } else {
+      numbers = req.body.numbers;
+      message = req.body.message;
+    }
+
     const results = [];
-
-    for (const number of numbers) {
-      try {
+    // Kirim ke banyak kontak secara paralel jika ada media
+    if (mediaFilePath) {
+      const MessageMedia = require('whatsapp-web.js').MessageMedia;
+      const mediaObj = MessageMedia.fromFilePath(mediaFilePath);
+      await Promise.all(numbers.map(async (number) => {
         const chatId = number.includes('@c.us') ? number : `${number}@c.us`;
-        
-        if (mediaUrl) {
-          // Handle media messages later
-          await client.sendMessage(chatId, message);
-        } else {
-          await client.sendMessage(chatId, message);
+        try {
+          await client.sendMessage(chatId, mediaObj, { caption: message });
+          const result = {
+            phone: chatId,
+            message,
+            status: 'success',
+            media: mediaFilename ? `/uploads/${mediaFilename}` : null
+          };
+          await messagesDb.add(result);
+          results.push(result);
+        } catch (error) {
+          const result = {
+            phone: number,
+            message,
+            status: 'failed',
+            error: error.message
+          };
+          await messagesDb.add(result);
+          results.push(result);
         }
-
-        const result = {
-          phone: chatId,
-          message,
-          status: 'success'
-        };
-        
-        await messagesDb.add(result);
-        results.push(result);
-      } catch (error) {
-        const result = {
-          phone: number,
-          message,
-          status: 'failed',
-          error: error.message
-        };
-        
-        await messagesDb.add(result);
-        results.push(result);
-      }
+      }));
+    } else {
+      // Tanpa media, tetap bisa paralel
+      await Promise.all(numbers.map(async (number) => {
+        const chatId = number.includes('@c.us') ? number : `${number}@c.us`;
+        try {
+          await client.sendMessage(chatId, message);
+          const result = {
+            phone: chatId,
+            message,
+            status: 'success'
+          };
+          await messagesDb.add(result);
+          results.push(result);
+        } catch (error) {
+          const result = {
+            phone: number,
+            message,
+            status: 'failed',
+            error: error.message
+          };
+          await messagesDb.add(result);
+          results.push(result);
+        }
+      }));
     }
 
     res.json({
@@ -200,6 +242,16 @@ app.post('/api/send', async (req, res) => {
 app.post('/api/logout', async (req, res) => {
   try {
     await client.logout();
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Tambahkan endpoint untuk hapus semua riwayat pesan
+app.delete('/api/messages', async (req, res) => {
+  try {
+    await messagesDb.deleteAll();
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
