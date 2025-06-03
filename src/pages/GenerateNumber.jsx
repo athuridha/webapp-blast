@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Box, VStack, HStack, Stack, Text, Button, Select, Input, Table, Thead, Tbody, Tr, Th, Td, useToast } from '@chakra-ui/react'
 import nomer from '../lib/nomer'
+import * as XLSX from 'xlsx'
 
 function getAllPrefixes() {
   // Flatten all prefix arrays from nomer.js
@@ -98,6 +99,18 @@ export default function GenerateNumber() {
     }
   }
 
+  // Fungsi untuk export ke excel
+  const handleExportExcel = () => {
+    if (result.length === 0) return
+    const ws = XLSX.utils.aoa_to_sheet([
+      ['No', 'Nomor WhatsApp'],
+      ...result.map((num, idx) => [idx + 1, num])
+    ])
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Nomor WhatsApp')
+    XLSX.writeFile(wb, 'nomor_whatsapp.xlsx')
+  }
+
   return (
     <Box bg="white" p={[2, 4, 8]} borderRadius="lg" shadow="md" maxW="100vw" overflowX="hidden">
       <VStack spacing={6} align="stretch">
@@ -105,27 +118,14 @@ export default function GenerateNumber() {
         <Stack direction={['column', 'row']} spacing={[2, 4]} align={['stretch', 'center']}>
           <Select
             value={jumlah}
-            onChange={e => setJumlah(e.target.value)}
+            onChange={e => setJumlah(Number(e.target.value))}
             maxW={['100%', '150px']}
             fontSize={['sm', 'md']}
           >
             {[10, 20, 50, 100, 200, 500, 1000].map(val => (
               <option key={val} value={val}>{val}</option>
             ))}
-            <option value="custom">Custom</option>
           </Select>
-          {jumlah === 'custom' ? (
-            <Input
-              type="number"
-              min={1}
-              max={10000}
-              value={typeof jumlah === 'number' ? jumlah : ''}
-              onChange={e => setJumlah(Number(e.target.value))}
-              maxW={['100%', '100px']}
-              placeholder="Jumlah"
-              fontSize={['sm', 'md']}
-            />
-          ) : null}
           <Input
             type="number"
             min={11}
@@ -145,6 +145,9 @@ export default function GenerateNumber() {
           </Button>
           <Button colorScheme="green" variant="solid" onClick={() => handleSaveToContacts()} isDisabled={result.length === 0} fontSize={['sm', 'md']} width={['100%', 'auto']}>
             Simpan ke Kontak
+          </Button>
+          <Button colorScheme="orange" onClick={handleExportExcel} isDisabled={result.length === 0} fontSize={['sm', 'md']} width={['100%', 'auto']}>
+            Export ke Excel
           </Button>
         </Stack>
         <Box overflowX="auto" maxH="400px" width="100%">

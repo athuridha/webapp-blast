@@ -4,3 +4,4 @@ node_modules
 uploads
 package-lock.json
 server/whatsapp.db
+package-lock.json
